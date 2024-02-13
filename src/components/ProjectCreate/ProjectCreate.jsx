@@ -1,7 +1,10 @@
 import { useRef } from "react";
 import InputField from "./InputField";
+import Modal from "../Modal";
 
-export default function ProjectCreate({onAdd}) {
+export default function ProjectCreate({ onAdd, onCancel }) {
+  const modal = useRef();
+
   const title = useRef();
   const description = useRef();
   const dueDate = useRef();
@@ -11,40 +14,55 @@ export default function ProjectCreate({onAdd}) {
     const enteredDescription = description.current.value;
     const enteredDueDate = dueDate.current.value;
 
+    if (
+      enteredTitle.trim() === "" ||
+      enteredDescription.trim() === "" ||
+      enteredDueDate.trim() === ""
+    ) {
+      modal.current.open();
+      return;
+    }
+
     onAdd({
-        title: enteredTitle,
-        description: enteredDescription,
-        dueDate: enteredDueDate,
+      title: enteredTitle,
+      description: enteredDescription,
+      dueDate: enteredDueDate,
     });
   }
 
-
   return (
-    <div className="w-[35rem] mt-16">
-      <div>
-        <InputField ref={title} label="Title" type="text" />
-        <InputField
-          ref={description}
-          label="Description"
-          textarea
-          type="text"
-        />
-        <InputField ref={dueDate} label="Due Date" type="date" />
+    <>
+      <Modal ref={modal} buttonCaption="Close">
+        <h2 className="text-xl font-bold text-red-800 my-4">Invalid Input</h2>
+        <p className='text-slate-950 mb-4'>Please make sure that all fields are filled correctly.</p>
+      </Modal>
+      <div className="w-[35rem] mt-16">
+        <div>
+          <InputField ref={title} label="Title" type="text" />
+          <InputField
+            ref={description}
+            label="Description"
+            textarea
+            type="text"
+          />
+          <InputField ref={dueDate} label="Due Date" type="date" />
+        </div>
+        <menu className="flex items-center justify-end gap-4 my-4">
+          <li>
+            <button className="text-stone-800 hover:text-stone-950" onClick={onCancel}>
+              Cancel
+            </button>
+          </li>
+          <li>
+            <button
+              className="px-6 py-2 rounded-md bg-stone-800 text-stone-50 hover:bg-stone-950"
+              onClick={handleSave}
+            >
+              Save
+            </button>
+          </li>
+        </menu>
       </div>
-      <menu className="flex items-center justify-end gap-4 my-4">
-        <li>
-          <button className="text-stone-800 hover:text-stone-950">
-            Cancel
-          </button>
-        </li>
-        <li>
-          <button 
-            className="px-6 py-2 rounded-md bg-stone-800 text-stone-50 hover:bg-stone-950"
-            onClick={handleSave}>
-            Save
-          </button>
-        </li>
-      </menu>
-    </div>
+    </>
   );
 }
